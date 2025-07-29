@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevBlog - Modern Coding Insights</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-bg: #0f172a;
+            --secondary-bg: #1e293b;
+            --accent-bg: #334155;
+            --sidebar-bg: #0c1220;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-color: #06b6d4;
+            --accent-hover: #0891b2;
+            --border-color: #475569;
+            --gradient-primary: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --sidebar-width: 280px;
+        }
+
+        * {
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, #1a202c 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Layout Structure */
+        .main-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        .sidebar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            padding: 0 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link-custom:hover,
+        .nav-link-custom.active {
+            color: var(--accent-color);
+            background: rgba(6, 182, 212, 0.1);
+            border-left-color: var(--accent-color);
+        }
+
+        .nav-link-custom i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--accent-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+        }
+
+        .content-wrapper.expanded {
+            margin-left: 0;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .sidebar-toggle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--accent-bg);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            padding: 3rem 0 4rem;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f1f5f9, var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .lead {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Cards and other components */
+        .card-custom {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-custom .card-body {
+            padding: 2rem;
+        }
+
+        .card-custom .card-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .card-custom:hover .card-title {
+            color: var(--accent-color);
+        }
+
+        .card-custom .card-text {
+            color: var(--text-secondary);
+        }
+
+        /* Badges */
+        .badge-date {
+            background: var(--accent-bg);
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .badge-tag {
+            background: var(--gradient-primary);
+            font-weight: 600;
+        }
+
+        /* Code blocks */
+        .code-container {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .code-header {
+            background: var(--accent-bg);
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-header::before {
+            content: "●●●";
+            color: #ef4444;
+            letter-spacing: 2px;
+        }
+
+        .code-container pre {
+            margin: 0;
+            padding: 1.5rem;
+            background: var(--secondary-bg) !important;
+        }
+
+        .code-container code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Right sidebar widget */
+        .widget {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .widget-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 700;
+            color: var(--accent-color);
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        .widget-body {
+            padding: 1.5rem;
+        }
+
+        .tag-link {
+            display: inline-block;
+            background: var(--accent-bg);
+            color: var(--text-secondary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            margin: 0.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .tag-link:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        /* Progress bar */
+        .progress-bar-custom {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            height: 3px;
+            background: var(--gradient-primary);
+            z-index: 1050;
+            transition: all 0.3s ease;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        .progress-bar-custom.expanded {
+            left: 0;
+            width: 100%;
+        }
+
+        /* Footer */
+        .footer-custom {
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            margin-top: 4rem;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .content-wrapper {
+                margin-left: 0;
+            }
+            
+            .progress-bar-custom {
+                left: 0;
+                width: 100%;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .card-custom .card-body {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Scrollbar styling for sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--sidebar-bg);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-bar-custom" id="progressBar"></div>
+
+    <div class="main-wrapper">
+        <!-- Left Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-brand">DevBlog</a>
+                <p class="mb-0 text-secondary" style="font-size: 0.9rem;">Modern Development Insights</p>
+            </div>
+            
+            <div class="sidebar-nav">
+                <!-- Main Navigation -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#home" class="nav-link-custom active">
+                                <i class="bi bi-house"></i>
+                                Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#tutorials" class="nav-link-custom">
+                                <i class="bi bi-book"></i>
+                                Tutorials
+                                <span class="nav-badge">12</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#projects" class="nav-link-custom">
+                                <i class="bi bi-code-square"></i>
+                                Projects
+                                <span class="nav-badge">8</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#snippets" class="nav-link-custom">
+                                <i class="bi bi-braces"></i>
+                                Code Snippets
+                                <span class="nav-badge">24</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Categories -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Categories</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#javascript" class="nav-link-custom">
+                                <i class="bi bi-filetype-js"></i>
+                                JavaScript
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#react" class="nav-link-custom">
+                                <i class="bi bi-arrow-repeat"></i>
+                                React
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#css" class="nav-link-custom">
+                                <i class="bi bi-palette"></i>
+                                CSS
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#nodejs" class="nav-link-custom">
+                                <i class="bi bi-server"></i>
+                                Node.js
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#typescript" class="nav-link-custom">
+                                <i class="bi bi-filetype-tsx"></i>
+                                TypeScript
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tools -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Tools</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#search" class="nav-link-custom">
+                                <i class="bi bi-search"></i>
+                                Search
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#bookmarks" class="nav-link-custom">
+                                <i class="bi bi-bookmarks"></i>
+                                Bookmarks
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#settings" class="nav-link-custom">
+                                <i class="bi bi-gear"></i>
+                                Settings
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="content-wrapper" id="contentWrapper">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="container-fluid">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <button class="sidebar-toggle btn" id="sidebarToggle">
+                            <i class="bi bi-list fs-5"></i>
+                        </button>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-secondary">Welcome back, Developer!</span>
+                            <button class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-bell"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Section -->
+            <section class="hero" id="home">
+                <div class="container-fluid">
+                    <div class="row justify-content-center text-center">
+                        <div class="col-lg-8">
+                            <h1 class="display-4 mb-4">Modern Development Insights</h1>
+                            <p class="lead mb-0">Exploring the latest in web development, programming techniques, and software engineering best practices</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Content -->
+            <main class="container-fluid my-5">
+                <div class="row g-4">
+                    <!-- Blog Posts -->
+                    <div class="col-xl-8 col-lg-7">
+                        <div class="row g-4">
+                            <!-- Post 1 -->
+                            <div class="col-12">
+                                <div class="card card-custom h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex gap-2 mb-3">
+                                            <span class="badge badge-date">Jul 22, 2025</span>
+                                            <span class="badge badge-tag">JavaScript</span>
+                                        </div>
+                                        <h2 class="card-title">Modern JavaScript Patterns for 2025</h2>
+                                        <p class="card-text mb-4">Discover the latest JavaScript patterns and techniques that are reshaping how we write modern web applications. From advanced async patterns to new ES2025 features.</p>
+                                        
+                                        <div class="code-container">
+                                            <div class="code-header">
+                                                <i class="bi bi-code-slash me-2"></i>
+                                                modern-patterns.js
+                                            </div>
+                                            <pre><code class="language-javascript">// Advanced async pattern with error handling
+const fetchUserData = async (userId) => {
+  try {
+    const [user, posts, comments] = await Promise.allSettled([
+      fetch(`/api/users/${userId}`),
+      fetch(`/api/posts?userId=${userId}`),
+      fetch(`/api/comments?userId=${userId}`)
+    ]);
+    
+    return {
+      user: user.status === 'fulfilled' ? await user.value.json() : null,
+      posts: posts.status === 'fulfilled' ? await posts.value.json() : [],
+      comments: comments.status === 'fulfilled' ? await comments.value.json() : []
+    };
+  } catch (error) {
+    console.error('Failed to fetch user data:', error);
+    throw new Error('User data unavailable');
+  }
+};</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Post 2 -->
+                            <div class="col-12">
+                                <div class="card card-custom h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex gap-2 mb-3">
+                                            <span class="badge badge-date">Jul 20, 2025</span>
+                                            <span class="badge badge-tag">CSS</span>
+                                        </div>
+                                        <h2 class="card-title">CSS Container Queries in Production</h2>
+                                        <p class="card-text mb-4">Learn how to implement responsive design at the component level using CSS container queries, revolutionizing how we think about responsive web design.</p>
+                                        
+                                        <div class="code-container">
+                                            <div class="code-header">
+                                                <i class="bi bi-palette me-2"></i>
+                                                container-queries.css
+                                            </div>
+                                            <pre><code class="language-css">/* Container query setup */
+.card-container {
+  container-type: inline-size;
+  container-name: card;
+}
+
+/* Responsive card based on container width */
+@container card (min-width: 400px) {
+  .card {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+  }
+  
+  .card-image {
+    aspect-ratio: 1;
+  }
+}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Post 3 -->
+                            <div class="col-12">
+                                <div class="card card-custom h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex gap-2 mb-3">
+                                            <span class="badge badge-date">Jul 18, 2025</span>
+                                            <span class="badge badge-tag">React</span>
+                                        </div>
+                                        <h2 class="card-title">React Server Components Deep Dive</h2>
+                                        <p class="card-text mb-4">Understanding the architecture and benefits of React Server Components, and how they're changing the landscape of React development.</p>
+                                        
+                                        <div class="code-container">
+                                            <div class="code-header">
+                                                <i class="bi bi-filetype-tsx me-2"></i>
+                                                ServerComponent.tsx
+                                            </div>
+                                            <pre><code class="language-typescript">// Server Component - runs on server
+async function BlogPost({ slug }: { slug: string }) {
+  // This fetch happens on the server
+  const post = await fetch(`/api/posts/${slug}`);
+  const data = await post.json();
+  
+  return (
+    &lt;article&gt;
+      &lt;h1&gt;{data.title}&lt;/h1&gt;
+      &lt;p&gt;{data.excerpt}&lt;/p&gt;
+      &lt;ClientInteractiveComponent data={data} /&gt;
+    &lt;/article&gt;
+  );
+}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Sidebar -->
+                    <div class="col-xl-4 col-lg-5">
+                        <!-- Popular Tags -->
+                        <div class="widget">
+                            <div class="widget-header">
+                                <i class="bi bi-tags me-2"></i>
+                                Popular Tags
+                            </div>
+                            <div class="widget-body">
+                                <a href="#" class="tag-link">JavaScript</a>
+                                <a href="#" class="tag-link">React</a>
+                                <a href="#" class="tag-link">TypeScript</a>
+                                <a href="#" class="tag-link">CSS</a>
+                                <a href="#" class="tag-link">Node.js</a>
+                                <a href="#" class="tag-link">Web APIs</a>
+                                <a href="#" class="tag-link">Performance</a>
+                                <a href="#" class="tag-link">Testing</a>
+                            </div>
+                        </div>
+
+                        <!-- Recent Posts -->
+                        <div class="widget">
+                            <div class="widget-header">
+                                <i class="bi bi-clock-history me-2"></i>
+                                Recent Posts
+                            </div>
+                            <div class="widget-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <a href="#" class="list-group-item list-group-item-action bg-transparent text-secondary border-0 border-bottom border-secondary py-3">
+                                        Building Scalable Micro-frontends
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action bg-transparent text-secondary border-0 border-bottom border-secondary py-3">
+                                        WebAssembly for JavaScript Developers
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action bg-transparent text-secondary border-0 border-bottom border-secondary py-3">
+                                        Advanced Git Workflows
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action bg-transparent text-secondary border-0 py-3">
+                                        Modern CSS Architecture
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Newsletter -->
+                        <div class="widget">
+                            <div class="widget-header">
+                                <i class="bi bi-envelope me-2"></i>
+                                Newsletter
+                            </div>
+                            <div class="widget-body">
+                                <p class="text-secondary mb-3">Get weekly updates on the latest development trends</p>
+                                <div class="mb-3">
+                                    <input type="email" class="form-control bg-dark text-light border-secondary" placeholder="Your email address" id="emailInput">
+                                </div>
+                                <button type="button" class="btn w-100" style="background: var(--gradient-primary); color: white;" id="subscribeBtn">
+                                    <i class="bi bi-send me-2"></i>
+                                    Subscribe
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="footer-custom py-4">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <p class="mb-0">&copy; 2025 DevBlog. Crafted with Bootstrap and modern web technologies.</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="social-links">
+                                <a href="#" class="text-secondary me-3">
+                                    <i class="bi bi-twitter fs-5"></i>
+                                </a>
+                                <a href="#" class="text-secondary me-3">
+                                    <i class="bi bi-github fs-5"></i>
+                                </a>
+                                <a href="#" class="text-secondary">
+                                    <i class="bi bi-linkedin fs-5"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const contentWrapper = document.getElementById('contentWrapper');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const progressBar = document.getElementById('progressBar');
+
+            // Sidebar toggle functionality
+            sidebarToggle.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.toggle('show');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    contentWrapper.classList.toggle('expanded');
+                    progressBar.classList.toggle('expanded');
+                }
+            });
+
+            // Close sidebar on mobile when clicking outside
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 768) {
+                    if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
+                        sidebar.classList.remove('show');
+                    }
+                }
+            });
+
+            // Progress Bar
+            window.addEventListener('scroll', () => {
+                const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                progressBar.style.transform = `scaleX(${scrolled / 100})`;
+            });
+
+            // Sidebar navigation
+            document.querySelectorAll('.nav-link-custom').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    document.querySelectorAll('.nav-link-custom').forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('show');
+                    }
+                    
+                    // Smooth scroll to section if it exists
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Newsletter subscription
+            const subscribeBtn = document.getElementById('subscribeBtn');
+            const emailInput = document.getElementById('emailInput');
+            
+            subscribeBtn.addEventListener('click', function() {
+                const email = emailInput.value.trim();
+                if (email && email.includes('@')) {
+                    this.innerHTML = '<i class="bi bi-check-circle me-2"></i>Subscribed!';
+                    this.style.background = '#10b981';
+                    this.disabled = true;
+                    
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="bi bi-send me-2"></i>Subscribe';
