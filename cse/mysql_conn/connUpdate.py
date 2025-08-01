@@ -1,6 +1,6 @@
 import mysql.connector
 
-def update_user(user_id, new_name):
+def update_user(user_id, new_name,password):
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -9,8 +9,8 @@ def update_user(user_id, new_name):
     )
 
     mycursor = mydb.cursor()
-    sql = "UPDATE user1 SET name = %s WHERE id = %s"
-    val = (new_name, user_id)
+    sql = "UPDATE user1 SET name = %s,password=%S WHERE id = %s"
+    val = (new_name, password,user_id)
     mycursor.execute(sql, val)
     mydb.commit()
     mycursor.close()
@@ -20,6 +20,7 @@ def update_user(user_id, new_name):
 
 id = input("Enter user ID to update: ")
 name = input("Enter new name: ")   
-update_user(1, "New Name")  
+password = input("Enter new password: ")
+update_user(id, name,password)  
 
 
